@@ -12,6 +12,8 @@ from keras.layers.core import Dense
 from keras.layers.advanced_activations import LeakyReLU
 from modular_rl.trpo import TrpoUpdater
 from modular_rl.ppo import PpoLbfgsUpdater, PpoSgdUpdater
+from IPython import embed
+
 
 MLP_OPTIONS = [
     ("hid_sizes", comma_sep_ints, [64,64], "Sizes of hidden layers of MLP"),
@@ -33,13 +35,21 @@ def make_mlps(ob_space, ac_space, cfg):
         net.add(Dense(layeroutsize, activation=cfg["activation"], **inshp))
     if isinstance(ac_space, Box):
         net.add(Dense(outdim))
-        Wlast = net.layers[-1].W
-        Wlast.set_value(Wlast.get_value(borrow=True)*0.1)
+        Wlast = net.layers[-1].get_weights();
+        for i in xrange(len(Wlast)):
+            Wlast[i] *= 0.1
+        #Wlast = net.layers[-1].W
+        net.layers[-1].set_weights(Wlast);
+        #Wlast.set_value(Wlast.get_value(borrow=True)*0.1)
         net.add(ConcatFixedStd())
     else:
         net.add(Dense(outdim, activation="softmax"))
-        Wlast = net.layers[-1].W
-        Wlast.set_value(Wlast.get_value(borrow=True)*0.1)
+        Wlast = net.layers[-1].get_weights();
+        for i in xrange(len(Wlast)):
+            Wlast[i] *= 0.1;
+        #Wlast = net.layers[-1].W
+        net.layers[-1].set_weights(Wlast);
+        #Wlast.set_value(Wlast.get_value(borrow=True)*0.1)
     policy = StochPolicyKeras(net, probtype)
     vfnet = Sequential()
     for (i, layeroutsize) in enumerate(hid_sizes):

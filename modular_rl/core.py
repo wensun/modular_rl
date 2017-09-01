@@ -8,6 +8,8 @@ from importlib import import_module
 import scipy.optimize
 from .keras_theano_setup import floatX, FNOPTS
 from keras.layers.core import Layer
+from IPython import embed
+
 
 # ================================================================
 # Make agent 
@@ -49,10 +51,12 @@ def add_prefixed_stats(stats, prefix, d):
 def compute_advantage(vf, paths, gamma, lam):
     # Compute return, baseline, advantage
     for path in paths:
-        path["return"] = discount(path["reward"], gamma)
-        b = path["baseline"] = vf.predict(path)
+        #computes discounted sums along 0th dimension of x.
+        path["return"] = discount(path["reward"], gamma) 
+        #NnVF.predict, predict baseline values for each observations.
+        b = path["baseline"] = vf.predict(path) 
         b1 = np.append(b, 0 if path["terminated"] else b[-1])
-        deltas = path["reward"] + gamma*b1[1:] - b1[:-1] 
+        deltas = path["reward"] + gamma*b1[1:] - b1[:-1] #advantage. 
         path["advantage"] = discount(deltas, gamma * lam)
     alladv = np.concatenate([path["advantage"] for path in paths])    
     # Standardize advantage

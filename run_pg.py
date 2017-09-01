@@ -3,7 +3,7 @@
 This script runs a policy gradient algorithm
 """
 
-
+from IPython import embed
 from gym.envs import make
 from modular_rl import *
 import argparse, sys, cPickle
@@ -35,6 +35,8 @@ if __name__ == "__main__":
     if args.use_hdf:
         hdf, diagnostics = prepare_h5_file(args)
     gym.logger.setLevel(logging.WARN)
+
+    #cfg: a dictionary stores all the parameters with their names. 
 
     COUNTER = 0
     def callback(stats):
