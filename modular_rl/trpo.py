@@ -35,12 +35,12 @@ class TrpoUpdater(EzFlat, EzPickle):
         N = ob_no.shape[0]
 
         # Policy gradient:
-        surr = (-1.0 / N) * T.exp(logp_n - oldlogp_n).dot(adv_n)
-        pg = flatgrad(surr, params)
+        surr = (-1.0 / N) * T.exp(logp_n - oldlogp_n).dot(adv_n)   #surrogate objective function. \sum_s \sum_a (p(a|s)/p_{old}(a|s))A (or Q)
+        pg = flatgrad(surr, params)  #policy gradient of the surrogate loss. 
 
         prob_np_fixed = theano.gradient.disconnected_grad(prob_np)
-        kl_firstfixed = probtype.kl(prob_np_fixed, prob_np).sum()/N
-        grads = T.grad(kl_firstfixed, params)
+        kl_firstfixed = probtype.kl(prob_np_fixed, prob_np).sum()/N   #KL(theta_old, theta).
+        grads = T.grad(kl_firstfixed, params)   #gradient with respect to KL
         flat_tangent = T.fvector(name="flat_tan")
         shapes = [var.get_value(borrow=True).shape for var in params]
         start = 0
@@ -74,22 +74,22 @@ class TrpoUpdater(EzFlat, EzPickle):
         args = (ob_no, action_na, advantage_n, prob_np)
 
         thprev = self.get_params_flat()
-        def fisher_vector_product(p):
-            return self.compute_fisher_vector_product(p, *args)+cfg["cg_damping"]*p #pylint: disable=E1101,W0640
-        g = self.compute_policy_gradient(*args)
-        losses_before = self.compute_losses(*args)
+        def fisher_vector_product(p):  #Hp, where H is the current Hessian of the KL constraint.
+            return self.compute_fisher_vector_product(p, *args)+cfg["cg_damping"]*p #pylint: disable=E1101,W0640  (H+\lambda I)p
+        g = self.compute_policy_gradient(*args)  #policy gradient
+        losses_before = self.compute_losses(*args) #surrogate loss value. 
         if np.allclose(g, 0):
             print "got zero gradient. not updating"
         else:
-            stepdir = cg(fisher_vector_product, -g)
-            shs = .5*stepdir.dot(fisher_vector_product(stepdir))
-            lm = np.sqrt(shs / cfg["max_kl"])
+            stepdir = cg(fisher_vector_product, -g)  #(H-1)g
+            shs = .5*stepdir.dot(fisher_vector_product(stepdir)) #s^THs
+            lm = np.sqrt(shs / cfg["max_kl"])  #maximum learning rate (inverse) to reach the KL threshold.
             print "lagrange multiplier:", lm, "gnorm:", np.linalg.norm(g)
-            fullstep = stepdir / lm
+            fullstep = stepdir / lm  #full step to approximately reach the KL threshold.
             neggdotstepdir = -g.dot(stepdir)
             def loss(th):
                 self.set_params_flat(th)
-                return self.compute_losses(*args)[0] #pylint: disable=W0640
+                return self.compute_losses(*args)[0] #pylint: disable=W0640 just return the surr.
             success, theta = linesearch(loss, thprev, fullstep, neggdotstepdir/lm)
             print "success", success
             self.set_params_flat(theta)

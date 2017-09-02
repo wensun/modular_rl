@@ -52,13 +52,13 @@ def compute_advantage(vf, paths, gamma, lam):
     # Compute return, baseline, advantage
     for path in paths:
         #computes discounted sums along 0th dimension of x.
-        path["return"] = discount(path["reward"], gamma) 
+        path["return"] = discount(path["reward"], gamma) #return is used for value function estimation.
         #NnVF.predict, predict baseline values for each observations.
         b = path["baseline"] = vf.predict(path) 
         b1 = np.append(b, 0 if path["terminated"] else b[-1])
         deltas = path["reward"] + gamma*b1[1:] - b1[:-1] #advantage. 
         path["advantage"] = discount(deltas, gamma * lam)
-    alladv = np.concatenate([path["advantage"] for path in paths])    
+    alladv = np.concatenate([path["advantage"] for path in paths])  #advantage is used for estimation. 
     # Standardize advantage
     std = alladv.std()
     mean = alladv.mean()
@@ -415,8 +415,8 @@ class NnRegression(EzPickle):
     def fit(self, x_nx, ytarg_ny):
         nY = ytarg_ny.shape[1]
         ypredold_ny = self.predict(x_nx)
-        out = self.opt.update(x_nx, ytarg_ny*self.mixfrac + ypredold_ny*(1-self.mixfrac))
-        yprednew_ny = self.predict(x_nx)
+        out = self.opt.update(x_nx, ytarg_ny*self.mixfrac + ypredold_ny*(1-self.mixfrac)) #mix the target with the old target. 
+        yprednew_ny = self.predict(x_nx) 
         out["PredStdevBefore"] = ypredold_ny.std()
         out["PredStdevAfter"] = yprednew_ny.std()
         out["TargStdev"] = ytarg_ny.std()
