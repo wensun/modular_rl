@@ -111,7 +111,7 @@ def get_paths(env, agent, cfg, seed_iter):
     return paths
 
 
-def rollout(env, agent, timestep_limit):
+def rollout(env, agent, timestep_limit, raw_obs = False):
     """
     Simulate the env and agent for timestep_limit steps
     """
@@ -120,8 +120,14 @@ def rollout(env, agent, timestep_limit):
 
     data = defaultdict(list)
     for _ in xrange(timestep_limit):
-        ob = agent.obfilt(ob)
-        data["observation"].append(ob)
+        
+        if raw_obs is True:
+            data["observation"].append(ob)
+            ob = agent.obfilt(ob)
+        else:
+            ob = agent.obfilt(ob)
+            data["observation"].append(ob)
+
         action, agentinfo = agent.act(ob)
         data["action"].append(action)
         for (k,v) in agentinfo.iteritems():
@@ -138,12 +144,12 @@ def rollout(env, agent, timestep_limit):
     data["terminated"] = terminated
     return data
 
-def do_rollouts_serial(env, agent, timestep_limit, n_timesteps, seed_iter):
+def do_rollouts_serial(env, agent, timestep_limit, n_timesteps, seed_iter, raw_obs = False):
     paths = []
     timesteps_sofar = 0
     while True:
         np.random.seed(seed_iter.next())
-        path = rollout(env, agent, timestep_limit)
+        path = rollout(env, agent, timestep_limit, raw_obs = raw_obs)
         paths.append(path)
         timesteps_sofar += pathlength(path)
         if timesteps_sofar > n_timesteps:
