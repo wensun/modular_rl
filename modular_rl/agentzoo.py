@@ -56,7 +56,8 @@ def make_mlps(ob_space, ac_space, cfg):
         inshp = dict(input_shape=(ob_space.shape[0]+1,)) if i==0 else {} # add one extra feature for timestep
         vfnet.add(Dense(layeroutsize, activation=cfg["activation"], **inshp))
     vfnet.add(Dense(1))
-    baseline = NnVf(vfnet, cfg["timestep_limit"], dict(mixfrac=0.1))
+    #crazy mixing here: 0.9 old_pred_y + 0.1 * curr_target_y.
+    baseline = NnVf(vfnet, cfg["timestep_limit"], dict(mixfrac=0.1))  
     return policy, baseline
 
 def make_deterministic_mlp(ob_space, ac_space, cfg):

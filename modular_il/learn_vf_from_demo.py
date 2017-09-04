@@ -10,13 +10,14 @@ class Expert_Vf(object):
     class that stores a pre-trained V^* estimator (keras NN) and 
     it's corresponding scaler (sklearn scaler)
     """
-    def __init__(self, net, scaler):
+    def __init__(self, net = None, scaler = None):
         self.reg = net;
         self.scaler = scaler;
     
     def predict(self, path):
-        ob_no = self.preproc(path["observation"])
-        ob_no = scaler.transform(ob_no) 
+        #use raw observations for expert value function estimator
+        ob_no = self.preproc(path["raw_observation"]) 
+        ob_no = scaler.transform(ob_no)  
         return self.net.predict(ob_no)[:] #return an 1-d array.
 
     def preproc(self, ob_no):

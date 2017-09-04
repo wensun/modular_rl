@@ -125,6 +125,7 @@ def rollout(env, agent, timestep_limit, raw_obs = False):
             data["observation"].append(ob)
             ob = agent.obfilt(ob)
         else:
+            data["raw_observation"].append(ob) #store raw_observations
             ob = agent.obfilt(ob)
             data["observation"].append(ob)
 
@@ -445,6 +446,12 @@ class NnVf(object):
         ob_no = concat([self.preproc(path["observation"]) for path in paths], axis=0)
         vtarg_n1 = concat([path["return"] for path in paths]).reshape(-1,1)
         return self.reg.fit(ob_no, vtarg_n1)
+    
+    def fit_with_reshp_rew(self, paths):
+        ob_no = concat([self.preproc(path["observation"]) for path in paths], axis=0)
+        vtarg_n1 = concat([path["reshp_return"] for path in paths]).reshape(-1,1)
+        return self.reg.fit(ob_no, vtarg_n1)
+
     def preproc(self, ob_no):
         return concat([ob_no, np.arange(len(ob_no)).reshape(-1,1) / float(self.timestep_limit)], axis=1)
 

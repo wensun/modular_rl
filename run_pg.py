@@ -18,6 +18,7 @@ if __name__ == "__main__":
     parser.add_argument("--agent",required=True)
     parser.add_argument("--plot",action="store_true")
     args,_ = parser.parse_known_args([arg for arg in sys.argv[1:] if arg not in ('-h', '--help')])
+    embed()
     env = make(args.env)
     env_spec = env.spec
     mondir = args.outfile + ".dir"
@@ -40,6 +41,7 @@ if __name__ == "__main__":
     #temporaily to set up parameters here for now: 
     if cfg['env'] == 'CartPole-v0' or cfg['env'] == 'Acrobot-v1':
         cfg['timesteps_per_batch'] = 10000;
+
 
 
     COUNTER = 0

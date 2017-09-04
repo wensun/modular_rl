@@ -26,6 +26,19 @@ def discount(x, gamma):
     assert x.ndim >= 1
     return scipy.signal.lfilter([1],[1,-gamma],x[::-1], axis=0)[::-1]
 
+def build_upper_diag_matrix(k, gamma):
+    gammas = np.array([gamma**i for i in range(k)])
+    matrix = np.zeros((1000,1000))
+    for i in xrange(1000):
+        matrix[i,i:min(i+k,1000)] = gammas[0:min(i+k,1000)-i]
+    return matrix
+
+
+def sum_over_k_steps(x, k, gamma_mat):
+    assert x.ndim == 1
+    return gamma_mat[0:x.shape[0],0:x.shape[0]].dot(x)
+    
+
 def explained_variance(ypred,y):
     """
     Computes fraction of variance that ypred explains about y.
