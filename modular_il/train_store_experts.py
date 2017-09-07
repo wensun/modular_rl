@@ -31,9 +31,14 @@ if __name__ == "__main__":
 
     #cfg: a dictionary stores all the parameters with their names. 
     #temporaily to set up parameters here for now: 
-    if cfg['env'] == 'CartPole-v0' or cfg['env'] == 'Acrobot-v1':
-        cfg['timesteps_per_batch'] = 10000;
-        cfg['n_iter'] = 50;
+    if cfg["env"] == 'Swimmer-v1' or cfg["env"] == "Walker2d-v1" or cfg["env"] == "Hopper-v1":
+        cfg["timesteps_per_batch"] = 25000
+        cfg["n_iter"] = 800
+    
+    
+    #if cfg['env'] == 'CartPole-v0' or cfg['env'] == 'Acrobot-v1':
+    #    cfg['timesteps_per_batch'] = 10000;
+    #    cfg['n_iter'] = 50;
 
     COUNTER = 0
     def callback(stats):

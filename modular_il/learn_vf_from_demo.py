@@ -11,17 +11,22 @@ class Expert_Vf(object):
     it's corresponding scaler (sklearn scaler)
     """
     def __init__(self, net = None, scaler = None):
-        self.reg = net;
+        self.net = net;
         self.scaler = scaler;
-    
-    def predict(self, path):
+ 
+    def predict(self, raw_obs, time_step):
+        raw_obs_t = np.concatenate([raw_obs, np.array([time_step])],axis=0)
+        trans_obs = self.scaler.transform(raw_obs_t.reshape(1,-1))
+        return self.net.predict(trans_obs)[:]
+ 
+    def predict_path(self, path):
         #use raw observations for expert value function estimator
         ob_no = self.preproc(path["raw_observation"]) 
-        ob_no = scaler.transform(ob_no)  
+        ob_no = self.scaler.transform(ob_no)  
         return self.net.predict(ob_no)[:] #return an 1-d array.
 
     def preproc(self, ob_no):
-        return np.concatenate([ob_no, np.arange(len(ob_no)).reshape(-1,1) / float(self.timestep_limit)], axis=1)
+        return np.concatenate([ob_no, np.arange(len(ob_no)).reshape(-1,1)], axis=1)
 
 
 def fit_value_function_k_steps(f, gamma, paths, k = 1):
@@ -29,6 +34,7 @@ def fit_value_function_k_steps(f, gamma, paths, k = 1):
     gammas = np.array([gamma**i for i in xrange(k)])
     all_obs = [];
     y_targets = [];
+    print "obs dim: {}".format(paths[0]["observation"].shape[1])
     for path in paths:
         all_obs += list(path["observation"][0:-k])
         #compute pred values:
@@ -71,7 +77,7 @@ def fit_value_function(f, gamma, paths):
     all_obs = all_obs[perm]
     y_targets = y_targets[perm]
     
-    f.fit(all_obs, y_targets, batch_size = 32, epochs = 5, validation_split=0.1)
+    f.fit(all_obs, y_targets, batch_size = 32, epochs = 10, validation_split=0.1)
 
     for k in reversed(range(1,50, 5)):
         fit_value_function_k_steps(f, gamma, paths, k = k)

@@ -38,6 +38,9 @@ if __name__ == "__main__":
     gym.logger.setLevel(logging.WARN)
 
     #np.random.seed(100)
+    if cfg["env"] == "Swimmer-v1" or cfg["env"] == "Hopper-v1" or cfg["env"] == "Walker2d-v1":
+        cfg["timesteps_per_batch"] = 25000
+
 
     model_name = "expert_models/Perfect_ExpertAgent_{}_{}".format(cfg['env'], cfg['agent'])
     loaded_model = cPickle.load(open(model_name, 'rb'))
@@ -56,7 +59,7 @@ if __name__ == "__main__":
     v_func.compile(optimizer = 'adam', loss = 'mse')
 
     scaler = fit_value_function(v_func, cfg['gamma'], paths = paths);
-    
+    scaler.predict(np.random.rand(11),2)
     
 
     
