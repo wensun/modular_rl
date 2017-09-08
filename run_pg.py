@@ -19,11 +19,13 @@ if __name__ == "__main__":
     parser.add_argument("--plot",action="store_true")
     args,_ = parser.parse_known_args([arg for arg in sys.argv[1:] if arg not in ('-h', '--help')])
     env = make(args.env)
+    if args.env == "Acrobot-v1":
+        env.spec.timestep_limit = 200
     env_spec = env.spec
     mondir = args.outfile + ".dir"
     if os.path.exists(mondir): shutil.rmtree(mondir)
     os.mkdir(mondir)
-    env = gym.wrappers.Monitor(env, mondir, video_callable=None if args.video else VIDEO_NEVER)
+    #env = gym.wrappers.Monitor(env, mondir, video_callable=None if args.video else VIDEO_NEVER)
     agent_ctor = get_agent_cls(args.agent)
     update_argument_parser(parser, agent_ctor.options)
     args = parser.parse_args()
@@ -39,8 +41,7 @@ if __name__ == "__main__":
     #cfg: a dictionary stores all the parameters with their names. 
     #temporaily to set up parameters here for now: 
     if cfg['env'] == 'CartPole-v0' or cfg['env'] == 'Acrobot-v1':
-        cfg['timesteps_per_batch'] = 10000;
-
+        cfg['timesteps_per_batch'] = 5000;
 
 
     COUNTER = 0

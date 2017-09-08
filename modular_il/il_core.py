@@ -16,14 +16,14 @@ def compute_advantage_il(baseline, expert_vf, paths, cfg):
         ve_val = expert_vf.predict_path(path) #it supposes to use the raw observation
         ve_val = np.append(ve_val, 0 if path["terminated"] else ve_val[-1])
         path["reshp_reward"] = path["reward"] + cfg["gamma"]*ve_val[1:] - ve_val[:-1]
-        path["reshp_return"] = discount(path["reshp_reward"],cfg["gamma"])
+        path["reshp_return"] = discount(path["reshp_reward"],cfg["gamma"]*cfg["lam"])
         #baseline predict:
-        b = path["baseline"] = baseline.predict(path) #it supposes to use filtered observations.
-        b1 = np.append(b, 0 if path["terminated"] else b[-1])
-        deltas = path["reshp_reward"] + cfg["gamma"]*b1[1:] - b1[:-1]
-        #deltas = path["reshp_reward"]
+        b = path["baseline"] = baseline.predict(path) #it supposes to use filtered observations. and it predicts reshp_return
+        #b1 = np.append(b, 0 if path["terminated"] else b[-1])
+        #deltas = path["reshp_reward"] + cfg["gamma"]*cfg["lam"]*b1[1:] - b1[:-1]
+        deltas = path["reshp_reward"]
         if cfg['truncate_k'] < 0 and cfg['lam'] >= 0:
-            path["advantage"] = discount(deltas, cfg["gamma"]*cfg["lam"])
+            path["advantage"] = discount(deltas, cfg["gamma"]*cfg["lam"]) - b
         elif cfg['truncate_k'] > 0 and cfg['lam'] < 0:
             path["advantage"] = sum_over_k_steps(deltas, cfg['truncate_k'], cfg['gamma_mat'])
         
@@ -41,13 +41,14 @@ def AggreVaTeD(env, agent, usercfg=None, callback=None):
 
     tstart = time.time()
     seed_iter = itertools.count()
+    all_stats = []
 
-    for _ in xrange(cfg["n_iter"]):
+    for iters in xrange(cfg["n_iter"]):
         #roll-out with current policy
         paths = get_paths(env, agent, cfg, seed_iter)
         compute_advantage_il(agent.baseline, agent.expert_vf, paths, cfg)
         #VF baseline update
-        vf_stats = agent.baseline.fit_with_reshp_rew(paths)
+        vf_stats = agent.baseline.fit_with_reshp_rew(paths) #use reshp_return
         #Policy update
         pol_stats = agent.updater(paths)
         #stats
@@ -56,7 +57,10 @@ def AggreVaTeD(env, agent, usercfg=None, callback=None):
         add_prefixed_stats(stats, "vf", vf_stats)
         add_prefixed_stats(stats, "pol", pol_stats)
         stats["TimeEllapsed"] = time.time() - tstart
-        if callback: callback(stats)
+        if callback: callback(stats,iters)
+        all_stats.append([stats["EpRewMean"], stats["TimeEllapsed"]])
+        
+    return all_stats
     
 
 def compute_advantage_il_2(vf, paths, expert_vf, cfg, curr_iter):

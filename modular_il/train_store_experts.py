@@ -35,10 +35,13 @@ if __name__ == "__main__":
         cfg["timesteps_per_batch"] = 25000
         cfg["n_iter"] = 800
     
-    
-    #if cfg['env'] == 'CartPole-v0' or cfg['env'] == 'Acrobot-v1':
-    #    cfg['timesteps_per_batch'] = 10000;
-    #    cfg['n_iter'] = 50;
+    if cfg["env"] == "Humanoid-v1":
+        cfg["timesteps_per_batch"] = 50000
+        cfg["n_ter"] = 1000
+
+    if cfg['env'] == 'CartPole-v0' or cfg['env'] == 'Acrobot-v1':
+        cfg['timesteps_per_batch'] = 5000;
+        cfg['n_iter'] = 200;
 
     COUNTER = 0
     def callback(stats):

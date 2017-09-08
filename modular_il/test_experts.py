@@ -20,6 +20,10 @@ if __name__ == "__main__":
     parser.add_argument("--agent",required=True)
     args,_ = parser.parse_known_args([arg for arg in sys.argv[1:] if arg not in ('-h', '--help')])
     env = make(args.env)
+
+    if args.env == "Acrobot-v1":
+        env.spec.timestep_limit = 200
+
     env_spec = env.spec
     mondir = args.outfile + ".dir"
     if os.path.exists(mondir): shutil.rmtree(mondir)
