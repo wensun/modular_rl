@@ -27,7 +27,7 @@ def run_experiment(args):
     tmp_seed = args.seed
     env = make(args.env)
     if args.env == "Acrobot-v1":
-        env.spec.timestep_limit = 200
+        env.spec.timestep_limit = 500
 
     env_spec = env.spec
     args.video = 0
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     args,_ = parser.parse_known_args([arg for arg in sys.argv[1:] if arg not in ('-h', '--help')])
 
     all_trials_stats = []
-    for trial in range(1,3):
+    for trial in range(0,15):
         args.seed = trial*10
         run_stats,cfg = run_experiment(args)
         all_trials_stats.append(run_stats)

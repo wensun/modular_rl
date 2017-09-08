@@ -7,8 +7,8 @@ from modular_rl import *
 class TrpoUpdater(EzFlat, EzPickle):
     
     options = [
-        ("cg_damping", float, 1e-3, "Add multiple of the identity to Fisher matrix during CG"),
-        ("max_kl", float, 1e-2, "KL divergence between old and new policy (averaged over state-space)"),
+        ("cg_damping", float, 0.1, "Add multiple of the identity to Fisher matrix during CG"),
+        ("max_kl", float, 1e-3, "KL divergence between old and new policy (averaged over state-space)"),
     ]
 
     def __init__(self, stochpol, usercfg):
@@ -91,6 +91,7 @@ class TrpoUpdater(EzFlat, EzPickle):
                 self.set_params_flat(th)
                 return self.compute_losses(*args)[0] #pylint: disable=W0640 just return the surr.
             success, theta = linesearch(loss, thprev, fullstep, neggdotstepdir/lm)
+            #theta = thprev + fullstep 
             print "success", success
             self.set_params_flat(theta)
         losses_after = self.compute_losses(*args)
