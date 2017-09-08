@@ -8,7 +8,7 @@ class TrpoUpdater(EzFlat, EzPickle):
     
     options = [
         ("cg_damping", float, 0.1, "Add multiple of the identity to Fisher matrix during CG"),
-        ("max_kl", float, 1e-3, "KL divergence between old and new policy (averaged over state-space)"),
+        ("max_kl", float, 1e-2, "KL divergence between old and new policy (averaged over state-space)"),
     ]
 
     def __init__(self, stochpol, usercfg):

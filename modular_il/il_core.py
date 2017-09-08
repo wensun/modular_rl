@@ -25,8 +25,10 @@ def compute_advantage_il(baseline, expert_vf, paths, cfg):
 
         if cfg['truncate_k'] < 0 and cfg['lam'] >= 0:
             path["advantage"] = discount(deltas, cfg["gamma"]*cfg["lam"]) #- b
-        elif cfg['truncate_k'] > 0 and cfg['lam'] < 0:
+        elif cfg['truncate_k'] > 0 and cfg['lam'] == 1:
             path["advantage"] = sum_over_k_steps(deltas, cfg['truncate_k'], cfg['gamma_mat'])
+        else:
+            assert False
         
     alladv = concat([path["advantage"] for path in paths])
     std = alladv.std()

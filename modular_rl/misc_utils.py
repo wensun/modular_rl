@@ -34,6 +34,14 @@ def build_upper_diag_matrix(k, gamma):
     return matrix
 
 
+def construct_gamma_mat(gamma, T, truncate_k):
+    gamma_mat = np.zeros((T,T))
+    gammas = [gamma**i for i in range(truncate_k)]
+    for i in xrange(T):
+        end_index = np.min([T, i+truncate_k])
+        gamma_mat[i, i:end_index] = gammas[0:end_index-i]
+    return gamma_mat
+
 def sum_over_k_steps(x, k, gamma_mat):
     assert x.ndim == 1
     return gamma_mat[0:x.shape[0],0:x.shape[0]].dot(x)
