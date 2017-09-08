@@ -59,7 +59,7 @@ if __name__ == "__main__":
     v_func.compile(optimizer = 'adam', loss = 'mse')
 
     scaler = fit_value_function(v_func, cfg['gamma'], paths = paths);
-    scaler.predict(np.random.rand(11),2)
+    #scaler.predict(np.random.rand(17),2)
     
 
     

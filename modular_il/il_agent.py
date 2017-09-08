@@ -24,7 +24,7 @@ class Tr_AggreVaTeD_Agent(AgentWithPolicy):
         self.updater = TrpoUpdater(policy, cfg)
         self.expert_vf = expert_vf
         AgentWithPolicy.__init__(self, policy, obfilter, rewfilter)
-        embed()
+        #embed()
 
 class iter_Tr_AggreVaTeD_Agent(AgentWithPolicy):
     options = MLP_OPTIONS + PG_OPTIONS + TrpoUpdater.options + FILTER_OPTIONS

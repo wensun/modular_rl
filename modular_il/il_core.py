@@ -13,7 +13,7 @@ def compute_advantage_il(baseline, expert_vf, paths, cfg):
     for path in paths:
         #expert_vf predict:
         path["return"] = discount(path["reward"], cfg["gamma"])
-        ve_val = expert_vf.predict(path) #it supposes to use the raw observation
+        ve_val = expert_vf.predict_path(path) #it supposes to use the raw observation
         ve_val = np.append(ve_val, 0 if path["terminated"] else ve_val[-1])
         path["reshp_reward"] = path["reward"] + cfg["gamma"]*ve_val[1:] - ve_val[:-1]
         path["reshp_return"] = discount(path["reshp_reward"],cfg["gamma"])
@@ -21,6 +21,7 @@ def compute_advantage_il(baseline, expert_vf, paths, cfg):
         b = path["baseline"] = baseline.predict(path) #it supposes to use filtered observations.
         b1 = np.append(b, 0 if path["terminated"] else b[-1])
         deltas = path["reshp_reward"] + cfg["gamma"]*b1[1:] - b1[:-1]
+        #deltas = path["reshp_reward"]
         if cfg['truncate_k'] < 0 and cfg['lam'] >= 0:
             path["advantage"] = discount(deltas, cfg["gamma"]*cfg["lam"])
         elif cfg['truncate_k'] > 0 and cfg['lam'] < 0:
