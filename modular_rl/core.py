@@ -86,9 +86,9 @@ def run_policy_gradient_algorithm(env, agent, usercfg=None, callback=None):
 
     tstart = time.time()
     seed_iter = itertools.count()
-    stats_iters = []
+    all_stats = []
 
-    for _ in xrange(cfg["n_iter"]):
+    for iters in xrange(cfg["n_iter"]):
         # Rollouts ========
         paths = get_paths(env, agent, cfg, seed_iter)
         compute_advantage(agent.baseline, paths, gamma=cfg["gamma"], lam=cfg["lam"])
@@ -102,10 +102,10 @@ def run_policy_gradient_algorithm(env, agent, usercfg=None, callback=None):
         add_prefixed_stats(stats, "vf", vf_stats)
         add_prefixed_stats(stats, "pol", pol_stats)
         stats["TimeElapsed"] = time.time() - tstart
-        stats_iters.append(stats)
-        if callback: callback(stats)
-    
-    return stats_iters
+        if callback: callback(stats,iters)
+        all_stats.append([stats["EpRewMean"], stats["TimeElapsed"]])
+
+    return all_stats
 
 def get_paths(env, agent, cfg, seed_iter):
     if cfg["parallel"]:
