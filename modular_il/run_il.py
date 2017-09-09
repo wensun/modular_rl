@@ -26,8 +26,7 @@ def callback(stats, iters):
 def run_experiment(args):
     tmp_seed = args.seed
     env = make(args.env)
-    if args.env == "Acrobot-v1":
-        env.spec.timestep_limit = 500
+    
 
     env_spec = env.spec
     args.video = 0
@@ -75,8 +74,8 @@ if __name__ == "__main__":
         run_stats,cfg = run_experiment(args)
         all_trials_stats.append(run_stats)
 
-    results_file_name = "results/{}_{}_{}".format(cfg["env"], 
-        cfg["agent"], cfg["lam"])
+    results_file_name = "results/{}_{}_{}_{}".format(cfg["env"], 
+        cfg["agent"], cfg["lam"], cfg["truncate_k"])
     
     cPickle.dump([all_trials_stats, cfg], open(results_file_name,"wb"))
 
