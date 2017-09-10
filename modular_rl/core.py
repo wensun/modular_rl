@@ -72,7 +72,7 @@ PG_OPTIONS = [
     ("n_iter", int, 200, "number of batch"),
     ("parallel", int, 0, "collect trajectories in parallel"),
     ("timesteps_per_batch", int, 10000, ""),
-    ("gamma", float, 0.99, "discount"),
+    ("gamma", float, 0.995, "discount"),
     ("lam", float, 1.0, "lambda parameter from generalized advantage estimation"),
 ]
 
