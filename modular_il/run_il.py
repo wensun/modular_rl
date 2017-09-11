@@ -52,7 +52,7 @@ def run_experiment(args):
     #cfg["truncate_k"] = -1
     #cfg["n_iter"] = 100
 
-    filename = "expert_models/Est_{}_Vstar".format(cfg["env"])
+    filename = "expert_models/Est_{}_Vstar_995".format(cfg["env"])
     expertvf = cPickle.load(open(filename, "rb"))
     agent = agent_ctor(env.observation_space, env.action_space, expertvf, cfg)
     run_stats = AggreVaTeD(env, agent, usercfg = cfg, callback=callback)

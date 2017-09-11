@@ -50,7 +50,7 @@ def fit_value_function_k_steps(f, gamma, paths, k = 1):
     all_obs = np.array(all_obs)[perm]
     y_targets = np.array(y_targets)[perm]
 
-    f.fit(all_obs, y_targets, batch_size=32, epochs=10, validation_split=0.1);
+    f.fit(all_obs, y_targets, batch_size=32, epochs=5, validation_split=0.1);
 
 def fit_value_function(f, gamma, paths):
     #whiten the dataset:
@@ -77,7 +77,7 @@ def fit_value_function(f, gamma, paths):
     all_obs = all_obs[perm]
     y_targets = y_targets[perm]
     
-    f.fit(all_obs, y_targets, batch_size = 32, epochs = 30, validation_split=0.1)
+    f.fit(all_obs, y_targets, batch_size = 32, epochs = 10, validation_split=0.1)
 
     for k in reversed(range(1,50, 2)):
         fit_value_function_k_steps(f, gamma, paths, k = k)
