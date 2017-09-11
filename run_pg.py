@@ -49,9 +49,13 @@ if __name__ == "__main__":
     parser.add_argument("--plot",action="store_true")
     args,_ = parser.parse_known_args([arg for arg in sys.argv[1:] if arg not in ('-h', '--help')])
     
+    np.random.seed(0)
+    seeds = np.random.randint(0, 2**32, size = 25)
+    print "all seeds {}".format(seeds)
+
     all_trials_stats = []
-    for trial in range(0,20):
-        args.seed = trial*10
+    for seed in seeds:
+        args.seed = seed
         run_stats,cfg = run_experiment(args)
         all_trials_stats.append(run_stats)
 
