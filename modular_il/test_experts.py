@@ -42,12 +42,11 @@ if __name__ == "__main__":
     gym.logger.setLevel(logging.WARN)
 
     #np.random.seed(100)
-    if cfg["env"] == "Swimmer-v1" or cfg["env"] == "Hopper-v1" or cfg["env"] == "Walker2d-v1":
+    if cfg["env"] == "Swimmer-v1" or cfg["env"] == "Hopper-v1" or cfg["env"] == "Walker2d-v1" or cfg["env"] == "MountainCar-v0":
         cfg["timesteps_per_batch"] = 25000
 
-
     model_name = "expert_models/Perfect_ExpertAgent_{}_{}".format(cfg['env'], cfg['agent'])
-    loaded_model = cPickle.load(open(model_name, 'rb'))
+    loaded_model = cPickle.load(open(model_name, 'rb'))[0]
 
     #get demonstration by rolling out:
     paths = do_rollouts_serial(env, loaded_model, cfg['timestep_limit'],

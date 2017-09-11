@@ -43,14 +43,15 @@ def run_experiment(args):
 
     if cfg["truncate_k"] > 0:
         cfg["gamma_mat"] = construct_gamma_mat(cfg["gamma"], cfg["timestep_limit"], cfg["truncate_k"])
+        cfg["gamma_lam_mat"] = construct_gamma_mat(cfg["gamma"]*cfg["lam"], cfg["timestep_limit"], cfg["truncate_k"])
 
     np.random.seed(args.seed)
+    env.seed(args.seed)
 
     if cfg["env"] == "Swimmer-v1" or cfg["env"] == "Hopper-v1" or cfg["env"] =="Walker2d-v1":
         cfg['timesteps_per_batch'] = 25000
-
-    #cfg["truncate_k"] = -1
-    #cfg["n_iter"] = 100
+    elif cfg["env"] == "MountainCar-v0" or cfg["env"] == "Acrobot-v0":
+        cfg['timesteps_per_batch'] = 5000
 
     filename = "expert_models/Est_{}_Vstar_995".format(cfg["env"])
     expertvf = cPickle.load(open(filename, "rb"))

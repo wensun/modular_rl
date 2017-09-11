@@ -29,8 +29,13 @@ def run_experiment(args):
         args.timestep_limit = env_spec.timestep_limit
     cfg = args.__dict__
     np.random.seed(args.seed)
+    env.seed(args.seed)
+
     if cfg["env"] == "Swimmer-v1" or cfg["env"] == "Hopper-v1" or cfg["env"] =="Walker2d-v1":
         cfg['timesteps_per_batch'] = 25000
+    elif cfg["env"] == "MountainCar-v0" or cfg["env"] == "Acrobot-v0":
+        cfg['timesteps_per_batch'] = 5000
+
     agent = agent_ctor(env.observation_space, env.action_space, cfg)
     run_stats = run_policy_gradient_algorithm(env, agent, callback=callback, usercfg = cfg)
     return run_stats, cfg
