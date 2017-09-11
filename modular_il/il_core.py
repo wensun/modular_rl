@@ -17,19 +17,18 @@ def compute_advantage_il(baseline, expert_vf, paths, cfg):
         ve_val = np.append(ve_val, 0 if path["terminated"] else ve_val[-1])
         path["reshp_reward"] = path["reward"] + cfg["gamma"]*ve_val[1:] - ve_val[:-1]
         
-        if cfg["truncate_k"] <= 0:
-            path["reshp_return"] = discount(path["reshp_reward"],cfg["gamma"]*cfg["lam"])
-        elif cfg["truncate_k"] > 0:
+        if cfg["truncate_k"] <= 0: #aggrevated with extra dicount factor: gamma_agg (so the total discount factor is gamma*gamma_agg)
+            path["reshp_return"] = discount(path["reshp_reward"],cfg["gamma"]*cfg["gamma_agg"])
+        elif cfg["truncate_k"] > 0: #aggrevated with k-step truncation (no gamma_agg)
             path["reshp_return"] = sum_over_k_steps(path["reshp_reward"], cfg["truncate_k"], cfg["gamma_mat"])
-
 
         #baseline predict:
         b = path["baseline"] = baseline.predict(path) #it supposes to use filtered observations. and it predicts reshp_return
         b1 = np.append(b, 0 if path["terminated"] else b[-1])
         
-        if cfg['truncate_k'] <= 0:
-            deltas = path["reshp_reward"] + cfg["gamma"]*cfg["lam"]*b1[1:] - b1[:-1]
-            path["advantage"] = discount(deltas, cfg["gamma"]*cfg["lam"]) #- b
+        if cfg['truncate_k'] <= 0: #aggrevated with extra discount factor: 
+            deltas = path["reshp_reward"] + cfg["gamma"]*cfg["gamma_agg"]*b1[1:] - b1[:-1]
+            path["advantage"] = discount(deltas, cfg["gamma"]*cfg["gamma_agg"]*cfg["lam"]) #- b  #lam is for GAE. 
         elif cfg['truncate_k'] > 0:
             deltas = path["reshp_reward"] + cfg["gamma"]*b1[1:] - b1[:-1]
             path["advantage"] = sum_over_k_steps(deltas, cfg['truncate_k'], cfg['gamma_lam_mat'])

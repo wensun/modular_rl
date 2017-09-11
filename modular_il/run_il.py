@@ -39,6 +39,7 @@ def run_experiment(args):
         args.timestep_limit = env_spec.timestep_limit
     cfg = args.__dict__
     cfg["lam"] = float(cfg["lam"])
+    cfg["gamma_agg"] = float(cfg["gamma_agg"]) #extra discount factor aggrevated will use.
     cfg["truncate_k"] = int(cfg["truncate_k"])
 
     if cfg["truncate_k"] > 0:
@@ -65,12 +66,13 @@ if __name__ == "__main__":
     parser.add_argument("--env",required=True)
     parser.add_argument("--agent",required=True)
     parser.add_argument("--truncate_k", required=True)
+    parser.add_argument("--gamma_agg", required=True)
     parser.add_argument("--lam", required=True)
     parser.add_argument("--plot",action="store_true")
     args,_ = parser.parse_known_args([arg for arg in sys.argv[1:] if arg not in ('-h', '--help')])
 
     all_trials_stats = []
-    for trial in range(0,15):
+    for trial in range(0,20):
         args.seed = trial*10
         run_stats,cfg = run_experiment(args)
         all_trials_stats.append(run_stats)

@@ -50,7 +50,7 @@ if __name__ == "__main__":
     args,_ = parser.parse_known_args([arg for arg in sys.argv[1:] if arg not in ('-h', '--help')])
     
     all_trials_stats = []
-    for trial in range(0,15):
+    for trial in range(0,20):
         args.seed = trial*10
         run_stats,cfg = run_experiment(args)
         all_trials_stats.append(run_stats)

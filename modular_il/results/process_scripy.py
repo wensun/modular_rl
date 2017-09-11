@@ -29,7 +29,8 @@ def process_result(stats):
 
 
 
-env = "Swimmer-v1"
+#env = "Swimmer-v1"
+env = "MountainCar-v0"
 filename = '{}_comparison.pdf'.format(env);
 pp = PdfPages(filename);
 
@@ -42,7 +43,7 @@ pp = PdfPages(filename);
 #T = trpo_stats[1]["n_iter"]
 
 #AggreVaTeD
-k = [20,100, 500]
+k = [1,10]
 agg_stats_lists = [];
 for i in xrange(len(k)):
     file_agg = "{}_il_agent.Tr_AggreVaTeD_Agent_1.0_{}".format(env, k[i])
@@ -60,8 +61,8 @@ plt.ylabel('Return', fontsize = fontsize);
 facecolor = 0.8
 plt.gca().set_facecolor((facecolor, facecolor, facecolor))
 plt.grid('on',linewidth=2)
-plt.ylim(0,200);
-plt.xlim(0, 250);
+plt.ylim(-200,-90);
+plt.xlim(0, 200);
 plt.tick_params(axis='both', which='major', labelsize=fontsize)
 plt.title(env, fontsize = fontsize);
 pp.savefig();
