@@ -53,6 +53,8 @@ if __name__ == "__main__":
 
     run_policy_gradient_algorithm(env, agent, callback=callback, usercfg = cfg)
 
+    cPickle.dump(agent, open("{}_{}_{}_{}".format(cfg["env"], cfg["agent"], cfg["gamma"],cfg["lam"]),"wb"))
+
     if args.use_hdf:
         hdf['env_id'] = env_spec.id
         try: hdf['env'] = np.array(cPickle.dumps(env, -1))

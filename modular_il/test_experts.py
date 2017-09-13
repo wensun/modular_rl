@@ -44,19 +44,26 @@ if __name__ == "__main__":
     #np.random.seed(100)
     if cfg["env"] == "Swimmer-v1" or cfg["env"] == "Hopper-v1" or cfg["env"] == "Walker2d-v1" or cfg["env"] == "MountainCar-v0":
         cfg["timesteps_per_batch"] = 25000
+    elif cfg["env"] == "Humanoid-v1":
+        cfg["timesteps_per_batch"] = 100000
 
     model_name = "expert_models/Perfect_ExpertAgent_{}_{}".format(cfg['env'], cfg['agent'])
     loaded_model = cPickle.load(open(model_name, 'rb'))[0]
 
+    env.seed(args.seed)
     #get demonstration by rolling out:
     paths = do_rollouts_serial(env, loaded_model, cfg['timestep_limit'],
         cfg["timesteps_per_batch"], itertools.count(), raw_obs = True) #raw data, no filter is used.
     
+    print cfg
     #initailize a keras neural network:
     v_func = Sequential()
     v_func.add(Dense(64, activation='tanh', 
                     input_shape = (paths[0]['observation'].shape[1]+1,),
                     kernel_regularizer=regularizers.l2(1e-5)))
+    
+    if cfg["env"] == "Humanoid-v1":
+        v_func.add(Dense(64, activation='tanh'))
 
     v_func.add(Dense(1))
     v_func.compile(optimizer = 'adam', loss = 'mse')

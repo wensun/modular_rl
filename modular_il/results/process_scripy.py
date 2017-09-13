@@ -35,15 +35,15 @@ filename = '{}_comparison.pdf'.format(env);
 pp = PdfPages(filename);
 
 #TRPO:
-#file_trpo = "{}_modular_rl.agentzoo.TrpoAgent".format(env)
-#trpo_stats = cPickle.load(open(file_trpo, "rb"))
-#trpo_m, trpo_std = process_result(trpo_stats[0])
-#plot_mean_std(trpo_m, trpo_std, 'C0', label = "TRPO")
+file_trpo = "{}_modular_rl.agentzoo.TrpoAgent".format(env)
+trpo_stats = cPickle.load(open(file_trpo, "rb"))
+trpo_m, trpo_std = process_result(trpo_stats[0])
+plot_mean_std(trpo_m, trpo_std, 'C0', label = "TRPO")
 
-#T = trpo_stats[1]["n_iter"]
+T = trpo_stats[1]["n_iter"]
 
 #AggreVaTeD
-k = [1,10]
+k = [1,2, 3, 10]
 agg_stats_lists = [];
 for i in xrange(len(k)):
     file_agg = "{}_il_agent.Tr_AggreVaTeD_Agent_1.0_{}".format(env, k[i])
